@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge, chrome=1">
+  <title><%= title %> | PiDasboard</title>
+  <% include ./partial/head.ejs %>
+</head>
+<body>
+  <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
+    <header class="bmd-layout-header">
+      <div class="navbar navbar-light bg-faded">
+        <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
+          <span class="sr-only">Toggle drawer</span>
+          <i class="material-icons">menu</i>
+        </button>
+        <ul class="nav navbar-nav">
+          <li class="nav-item">
+            <a class="navbar-brand px-2" aria-disabled="true" style="pointer-events: none;">
+              <img src="/assets/img/speedometer.svg" class="d-inline-block align-top" width="30" height="30">
+              Pi Dashboard.js
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <div id="dw-s2" class="bmd-layout-drawer bg-faded">
+      <header>
+        <a class="navbar-brand">VIEWS</a>
+      </header>
+      <ul class="list-group">
+        <a class="list-group-item">CPU</a>
+        <a class="list-group-item">MEM</a>
+        <a class="list-group-item">FANS</a>
+      </ul>
+    </div>
+    <main class="bmd-layout-content">
+      <div class="container">
+        <p><%- body %></p>
+      </div>
+    </main>
+  </div>
+
+  <% include ./partial/after_footer.ejs %>
+</body>
+</html>

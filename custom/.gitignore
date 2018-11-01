@@ -1,0 +1,4 @@
+# Custom plugins
+plugins/
+!plugins/example
+!plugins/example.js

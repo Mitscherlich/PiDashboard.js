@@ -1,0 +1,12 @@
+.center {
+  margin: 0 auto;
+}
+
+.shadow-0 {
+  box-shadow: 0!important;
+}
+
+.gauge-title{
+  font-size: 10px;
+  fill: #A1A6AD;
+}

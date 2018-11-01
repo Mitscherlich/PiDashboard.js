@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+;'use strict';
+
+const path = require('path');
+
+const appInfo = require('../package.json');
+const config = require('../config/config')(appInfo);
+const plugins = require('../config/plugins');
+
+const { version, host, port } = config;
+
+const debug = require('debug')('pi-dashboard:www');
+
+const app = require('../app')(Object.assign({}, { ...config }, { ...plugins }, {
+  plugins: Object.keys(plugins),
+  root: path.resolve(__dirname, '..'),
+}));
+
+app.listen(port);
+debug(`pi-dashboard@${version} listening on port ${port}`);
+debug(`Go visit you brower http://${host}:${port}`);
