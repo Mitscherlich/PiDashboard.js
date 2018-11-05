@@ -36,29 +36,31 @@ module.exports = (app, io) => {
     })
 
     // 自动/手动
-    socket.on('toggle auto', cb => {
+    socket.on('toggle auto', () => {
       const fanPlugin = loadedPlugins['fan']
       if (typeof fanPlugin === 'undefined') {
         const err = new Error(new Error('[WARNING] Plugin fan is not installed. Have config it porperly?'))
         debug(err.message)
-        return cb(err)
+        // return cb(err)
       }
-      const toggleAuto = fanPlugin['toggle_fan_auto']
-      toggleAuto()
-      cb(null)
+      /* const toggleAuto = fanPlugin['toggle_fan_auto']
+      toggleAuto() */
+      fanPlugin['toggle_fan_auto']()
+      // cb(null)
     })
 
     // 开/关
-    socket.on('toggle state', cb => {
+    socket.on('toggle state', () => {
       const fanPlugin = loadedPlugins['fan']
       if (typeof fanPlugin === 'undefined') {
         const err = new Error(new Error('[WARNING] Plugin fan is not installed. Have config it porperly?'))
         debug(err.message)
-        return cb(err)
+        // return cb(err)
       }
-      const toggleState = fanPlugin['toggle_fan_state']
-      toggleState()
-      cb(null)
+      /* const toggleState = fanPlugin['toggle_fan_state']
+      toggleState() */
+      fanPlugin['toggle_fan_state']()
+      // cb(null)
     })
   })
 }

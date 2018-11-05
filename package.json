@@ -1,6 +1,6 @@
 {
   "name": "pi-dashboard",
-  "version": "0.0.0-rc.0",
+  "version": "0.0.0-rc.1",
   "description": "The node.js rpi dashboard",
   "main": "app.js",
   "bin": "bin/www",

@@ -40,6 +40,7 @@ module.exports = config => {
       continue
     }
     // 加载插件
+    debug(`[INFO] Use plugin ${name}`)
     const plugin = new (require(pluginPath))
     // 如果需要初始化则初始化插件
     if (plugin.init !== null && typeof plugin.init === 'function') {
