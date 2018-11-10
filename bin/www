@@ -21,4 +21,4 @@ const app = require('../app')(merge({}, { ...config }, { ...plugins }, {
 
 app.listen(port);
 debug(`pi-dashboard@${version} listening on port ${port}`);
-debug(`Go visit you brower http://${host}:${port}`);
+debug(`Go and visit in you brower http://${host}:${port}`);
