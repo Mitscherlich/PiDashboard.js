@@ -13,8 +13,21 @@ const cpuAvg = () => {
     idle += cpu.times.idle
   }
   return {
-    idle, total,
-    percent: 1 - idle / total,
+    idle: idle / cpus.length,
+    total: total / cpus.length,
+    /* percent: 1 - idle / total, */
+  }
+}
+
+const startMeasure = cpuAvg()
+
+const measure = () => {
+  const endMeasure = cpuAvg()
+  const idleDiff = endMeasure.idle - startMeasure.idle
+  const totalDiff = endMeasure.total - startMeasure.total
+  const percentage = 1 - idleDiff / totalDiff
+  return {
+    percent: percentage
   }
 }
 
@@ -24,6 +37,6 @@ module.exports = class CpuPlugin {
   }
 
   [ FETCH_CPU_AVG ] () {
-    return cpuAvg()
+    return measure()
   }
 }
