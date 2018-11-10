@@ -41,10 +41,10 @@ module.exports = config => {
     }
     // 加载插件
     debug(`[INFO] Use plugin ${name}`)
-    const plugin = new (require(pluginPath))
+    const plugin = new (require(pluginPath))(pluginConfig)
     // 如果需要初始化则初始化插件
     if (plugin.init !== null && typeof plugin.init === 'function') {
-      plugin.init(pluginConfig)
+      plugin.init()
     }
     // 若已存在同名的插件则跳过
     if (typeof loadedPlugins[name] !== 'undefined') {

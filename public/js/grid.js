@@ -42,7 +42,7 @@
       this.xScale = null
       this.xAxis = null
       this.yScale = null
-      // this.tooltops = null
+      this.tooltip = null
       this.linePath = null
 
       this.insert = null
@@ -100,30 +100,34 @@
                           .duration(parseInt(this.step))
                           .ease(d3.easeLinear)
 
-      // this.tooltops = d3.select('.toolt')
+      this.tooltip = d3.select('body')
+                        .append('div')
+                        .attr('class', 'tooltip')
+                        .style('opacity', 0.0)
 
       this.isStarted = true
+
+      this.index = 1
 
       this.loop()
     }
 
-    update () {
-      // const now = this.timeMin + this.count * this.step
-      console.assert(typeof this.updateData !== 'undefined', 'Expect `this.updateDate` not be `undefined`')
-      console.assert(typeof this.updateData !== 'function', 'Expect `this.updateDate` to be a `function` bot got a `' + (typeof this.updateDate) + '`')
+    update (count) {
+      const now = this.timeMin + count * this.step
+      console.assert(typeof this.updateData !== 'undefined', 'Expect `this.updateData` not be `undefined`')
+      console.assert(typeof this.updateData === 'function', 'Expect `this.updateData` to be a `function` bot got a `' + (typeof this.updateData) + '`')
       for (const { data } of this.data) {
-        data.push([ Date.now(), this.updateData() ])
+        data.push([ now, this.updateData() ])
       }
     }
 
     loop () {
       let normalValueCount = 0
       let isModified = false
-      let index = 1
       that.transition = that.transition.each(() => {
-        that.update()
+        that.update(that.index)
         const length = that.data[0].data.length
-        const modAxis = false
+        let modAxis = false
         const timenow = (that.data[0].data)[length - 1][0]
         let currMaxValue = -1
         let currMinValue = -1
@@ -134,19 +138,21 @@
         }
         // 根据最大最小值动态缩放坐标轴
         if (currMaxValue < that.valMin) {
-          if (currMinValue < 0) {
-            that.valMin = currMinValue * 1.5
-          } else {
-            that.valMin = currMinValue / 1.5
-          }
+          // if (currMinValue < 0) {
+          //   that.valMin = currMinValue * 1.5
+          // } else {
+          //   that.valMin = currMinValue / 1.5
+          // }
+          that.valMin = currMaxValue - 10
           modAxis = true
         }
         if (currMaxValue > that.valMax) {
-          if (currMaxValue > 0) {
-            that.valMax = currMaxValue * 1.5
-          } else {
-            that.valMax = currMaxTime / 1.5
-          }
+          // if (currMaxValue > 0) {
+          //   that.valMax = currMaxValue * 1.5
+          // } else {
+          //   that.valMax = currMaxTime / 1.5
+          // }
+          that.valMax = currMaxTime + 10
           modAxis = true
         }
         // 如果出现 30 个及以上的值落在原始的范围内，则将坐标轴缩放回来
@@ -170,7 +176,7 @@
           that.svg.selectAll('g.y.axis').selectAll('line').attr('stroke', color)
           that.svg.selectAll('g.y.axis').selectAll('text').attr('fill', color)
           // 去除和 x 坐标重合的那一条线
-          that.svg.selectAll('g.y.axis').selectAll('.tick').filter((d, i) => d != 0)
+          that.svg.selectAll('g.y.axis').selectAll('.tick').filter(d => d != 0)
                   .append('line')
                   .attr('y2', '0')
                   .attr('x2', width)
@@ -217,11 +223,7 @@
 
         that.svg.selectAll('.path')
                 .data(that.data)
-                .attr('d', d => {
-                  const dValue = that.linePath(d.data)
-                  // console.log(d, d.data, dValue)
-                  return dValue
-                })
+                .attr('d', d => that.linePath(d.data))
         const fdataGroups = that.svg.selectAll('.datagroups').data(that.data)
         fdataGroups.selectAll('circle')
                   .data(d => d.data)
@@ -229,28 +231,28 @@
                   .attr('cy', d => that.yScale(d[1]))
                   .attr('r', 4)
                   .attr('fill', d => {
-                    if (d[1] > parseInt(max) || d[1] < parseInt(min)) {
+                    if (d[1] > parseInt(max) /* || d[1] < parseInt(min) */) {
                       return '#ff0000'
                     } else {
                       return '#ffffff'
                     }
                   })
-                  // .on('mouseover', d => {
-                  //   /**
-                  //    * 鼠标移入时
-                  //    *  (1) 通过 selection.html() 来更改提示框的文字
-                  //    *  (2) 通过更改样式 left 和 top 来设定提示框的位置
-                  //    *  (3) 设定提示框的透明度为 1.0（完全不透明）
-                  //    */
-                  //   const timeFormat = d3.timeFormat('%H:%M:%S')
-                  //   that.tooltip.html('时间:' + timeFormat(`${new Date(d[0])}<br/>值:${d[1]}`))
-                  //       .style('left', `${d3.event.pageX}px`)
-                  //       .style('top', `${d3.event.pageY + 20}px`)
-                  //       .style('opacity', 1.0)
-                  // })
-                  // .on('mouseout', () => {
-                  //   that.tooltip.style('opacity', 0.0)
-                  // })
+                  .on('mouseover', d => {
+                    /**
+                     * 鼠标移入时
+                     *  (1) 通过 selection.html() 来更改提示框的文字
+                     *  (2) 通过更改样式 left 和 top 来设定提示框的位置
+                     *  (3) 设定提示框的透明度为 1.0（完全不透明）
+                     */
+                    const timeFormat = d3.timeFormat('%H:%M:%S')
+                    that.tooltip.html(`时间:${timeFormat(new Date(d[0]))}<br/>温度:${d[1]}˚C`)
+                        .style('left', `${d3.event.pageX}px`)
+                        .style('top', `${d3.event.pageY + 20}px`)
+                        .style('opacity', 1.0)
+                  })
+                  .on('mouseout', () => {
+                    that.tooltip.style('opacity', 0.0)
+                  })
 
         that.xAxis = d3.axisBottom()
                       .scale(that.xScale)
@@ -262,12 +264,12 @@
         const color = that.svg.selectAll('g.y.axis').select('.domain').attr('stroke')
         that.svg.selectAll('g.x.axis').selectAll('line').attr('stroke', color)
         that.svg.selectAll('g.x.axis').selectAll('text').attr('fill', color)
-        if (index > that.count - 1) {
+        if (that.index > that.count - 1) {
           for (const { data } of that.data) {
             data.shift()
           }
         }
-        index += 1
+        that.index += 1
       }).transition().on('start', that.loop)
     }
   }

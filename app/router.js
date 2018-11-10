@@ -1,4 +1,3 @@
-const assert = require('assert')
 const router = require('koa-route')
 const debug = require('debug')('pi-dashboard:router')
 
@@ -6,7 +5,12 @@ const home = new (require('./controllers/home'))
 
 module.exports = (app, io) => {
 
-  const { loadedPlugins } = app.context
+  const { config, loadedPlugins } = app.context
+
+  app.use(async (ctx, next) => {
+    ctx.state.config = config
+    await next()
+  })
 
   // 首页
   app.use(router.get('/', home.show))
@@ -36,29 +40,25 @@ module.exports = (app, io) => {
     })
 
     // 自动/手动
-    socket.on('toggle auto', () => {
+    socket.on('toggle auto', /* ({}, cb) */ () => {
       const fanPlugin = loadedPlugins['fan']
       if (typeof fanPlugin === 'undefined') {
         const err = new Error(new Error('[WARNING] Plugin fan is not installed. Have config it porperly?'))
         debug(err.message)
         // return cb(err)
       }
-      /* const toggleAuto = fanPlugin['toggle_fan_auto']
-      toggleAuto() */
       fanPlugin['toggle_fan_auto']()
       // cb(null)
     })
 
     // 开/关
-    socket.on('toggle state', () => {
+    socket.on('toggle state', /* ({}, cb) */ () => {
       const fanPlugin = loadedPlugins['fan']
       if (typeof fanPlugin === 'undefined') {
         const err = new Error(new Error('[WARNING] Plugin fan is not installed. Have config it porperly?'))
         debug(err.message)
         // return cb(err)
       }
-      /* const toggleState = fanPlugin['toggle_fan_state']
-      toggleState() */
       fanPlugin['toggle_fan_state']()
       // cb(null)
     })

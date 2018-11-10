@@ -1,7 +1,6 @@
 const GPIO = require('rpio')
 const assert = require('assert')
 const debug = require('debug')('pi-dashboard:plugins:fan')
-const fs = require('fs')
 
 const VALID_PINS = [
   3,  // GPIO2
@@ -38,16 +37,22 @@ const FETCH_COOLER_STATUS = 'fetch_cooler_status'
 const TOGGLE_FAN_AUTO = 'toggle_fan_auto'
 const TOGGLE_FAN_STATE = 'toggle_fan_state'
 
-const TEMP_LOW = 38
-const TEMP_HIGH = 42
-const TEMP_FILE = '/sys/class/thermal/thermal_zone0/temp'
-
-const cpuTemp = () => parseInt(fs.readFileSync(TEMP_FILE)) / 1000
+const tempUtil = new (require('./temp'))()
 
 module.exports = class FanPlugin {
-  constructor () {
+  constructor (config) {
+    const { auto, pin } = config
+    assert(VALID_PINS.includes(pin), `Pin ${pin} is not a valid gpio port!`)
+    const { enable, min, max } = auto
+    assert(min < max, `Auto toggle temperature minimum ${min} should less than maximum ${max}`)
+    if (max - min < 1) {
+      debug(`[INFO] The recommended maximum temperature ${max} should be at least one degree above the minimum ${min}`)
+    }
+    this.max = max
+    this.min = min
     this.isClose = true
-    this.isAuto = true
+    this.isAuto = enable || true
+    this.pin = pin
     this.temp = -1
     this.t = null
   }
@@ -58,16 +63,17 @@ module.exports = class FanPlugin {
 
   auto () {
     return setInterval(() => {
-      this.temp = cpuTemp()
+      const { current } = tempUtil['fetch_cpu_temp']()
+      this.temp = current
       debug(`Current temp is ${this.temp}`)
       if (this.isClose) {
-        if (this.temp > TEMP_HIGH) {
+        if (this.temp > this.max) {
           GPIO.write(this.pin, GPIO.LOW)
           debug('Open air cooler')
           this.isClose = false
         }
       } else {
-        if (this.temp < TEMP_LOW) {
+        if (this.temp < this.min) {
           GPIO.write(this.pin, GPIO.HIGH)
           debug('Close air cooler')
           this.isClose = true
@@ -76,23 +82,16 @@ module.exports = class FanPlugin {
     }, 2000)
   }
 
-  init (config) {
-    const pin = { config }
-    assert(VALID_PINS.includes(pin), `Pin ${pin} is not a valid gpio port!`)
+  init () {
     // 初始化 GPIO 引脚
-    GPIO.open(pin, GPIO.OUTPUT, GPIO.HIGH)
-    this.pin = pin
+    GPIO.open(this.pin, GPIO.OUTPUT, GPIO.HIGH)
     this.t = this.auto()
   }
 
   [ FETCH_COOLER_STATUS ] () {
-    if (this.isAuto !== true) {
-      this.temp = cpuTemp()
-    }
     return {
       auto: this.isAuto,
       status: !this.isClose,
-      temp: this.temp,
     }
   }
 
@@ -116,11 +115,11 @@ module.exports = class FanPlugin {
       this.isAuto = false
     }
     if (this.isClose) {
-      GPIO.write(PIN, GPIO.LOW)
+      GPIO.write(this.pin, GPIO.LOW)
       debug('Open air cooler')
       this.isClose = false
     } else {
-      GPIO.write(PIN, GPIO.HIGH)
+      GPIO.write(this.pin, GPIO.HIGH)
       debug('Close air cooler')
       this.isClose = true
     }

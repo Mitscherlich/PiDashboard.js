@@ -28,6 +28,11 @@ module.exports = appInfo => {
   /* 插件设置 */
   config.fan = {
     pin: 8, // 指定用于控制风扇的引脚，参考 https://pinout.xyz/
+    auto: {
+      enable: true, // 自动开启，默认 true
+      min: 36,      // 自动关闭下限
+      max: 42,      // 自动启动上限
+    }
   }
 
   return config

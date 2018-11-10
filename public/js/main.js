@@ -57,8 +57,8 @@
         auto: false,
         isOpen: false,
         interval: 1.5,
-        temp: 38,
       }
+      this.temp = 38
       // 温度图表
       this.tempGrid = null
       // 计时器
@@ -118,7 +118,7 @@
       // 初始化温度图表
       if (this.tempGrid === null) {
         this.tempGrid = new Grid('#realtime', 35, 45.5)
-        this.tempGrid.updateData = () => this.fan.temp
+        this.tempGrid.updateData = () => this.temp
         $('#tempSvg').hide()
       }
       // 初始化计时器
@@ -135,19 +135,20 @@
       if (!socket.connected) {
         return
       }
-      socket.emit('fetch', { plugins: [ 'cpu', 'mem', /* 'io', */ 'fan', ]}, ({ cpu, mem, /* io, */ fan, }) => {
+      socket.emit('fetch', { plugins: [ 'cpu', 'mem', /* 'io', */ 'fan', 'temp' ]}, ({ cpu, mem, /* io, */ fan, temp }) => {
         this.cpuChart.update(cpu.percent)
         this.memChart.update(mem.percent)
         if (typeof fan !== 'undefined') {
-          const { temp, auto, status } = fan
+          const { auto, status } = fan
+          const { current } = temp
           this.$switchAuto.checked = auto
           this.$switchToggle.checked = status
-          this.fan.temp = temp
+          this.temp = current
           if (this.tempGrid.isStarted !== true) {
             $('#tempSvg').show()
             this.tempGrid.init([{
               name: 'temp',
-              data: [ [ Date.now(), this.fan.temp ] ],
+              data: [ [ Date.now(), this.temp ] ],
             }], 1, 20)
           }
         }

@@ -7,6 +7,10 @@ module.exports = {
     enable: true,
     package: 'mem',
   },
+  temp: {
+    enable: false,
+    package: 'temp',
+  },
   fan: {
     enable: false,
     package: 'fan',
