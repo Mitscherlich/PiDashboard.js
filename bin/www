@@ -7,7 +7,7 @@ const path = require('path');
 const { merge } = require('lodash');
 
 const appInfo = require('../package.json');
-const config = require('../config/config')(appInfo);
+const config = require('../config/default')(appInfo);
 const plugins = require('../config/plugins');
 
 const { version, host, port } = config;

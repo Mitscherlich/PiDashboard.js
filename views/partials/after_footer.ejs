@@ -9,4 +9,4 @@
 <!-- <script src="assets/js/grid.js"></script> -->
 <!-- <script src="assets/js/main.js"></script> -->
 <script src="assets/dist/js/vendors.js"></script>
-<script>(function() { const main = new Main(); main.init(); })();</script>
+<script>(function() { const main = new Main(JSON.parse('<%- JSON.stringify(config) %>')); main.init(); })();</script>
