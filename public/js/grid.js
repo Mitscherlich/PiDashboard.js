@@ -1,9 +1,10 @@
 /**
- * Most use lovekobe24/DymanicLineChartWithD3 @see https://github.com/lovekobe24/DymanicLineChartWithD3/blob/master/js/lineChartTranslation2.js
- * Refact with es6 keyword `class`
+ * 复用了 lovekobe24/DymanicLineChartWithD3
+ * @see https://github.com/lovekobe24/DymanicLineChartWithD3/blob/master/js/lineChartTranslation2.js
+ * 使用 es6 重构
  */
 
-(exports => {
+(function (exports) {
   const top = 10
   const right = 20
   const bottom = 50
@@ -150,9 +151,9 @@
           // if (currMaxValue > 0) {
           //   that.valMax = currMaxValue * 1.5
           // } else {
-          //   that.valMax = currMaxTime / 1.5
+          //   that.valMax = currMaxValue / 1.5
           // }
-          that.valMax = currMaxTime + 10
+          that.valMax = currMaxValue + 10
           modAxis = true
         }
         // 如果出现 30 个及以上的值落在原始的范围内，则将坐标轴缩放回来
