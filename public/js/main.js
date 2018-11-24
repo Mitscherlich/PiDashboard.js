@@ -1,6 +1,6 @@
-(exports => {
+(function (exports) {
   exports.Main = class Main {
-    constructor () {
+    constructor (options) {
       this.$monitorAlert = document.querySelector('#monitorAlert')
       this.$monitorWrapper = document.querySelector('#monitorWrapper')
       this.$coolerAlert = document.querySelector('#coolerAlert')
@@ -11,6 +11,10 @@
       this.$switchAuto = document.querySelector('#switchAuto')
       this.$switchToggle = document.querySelector('#switchToggle')
       this.$radioIntervals = document.querySelectorAll('input[name="interval"]')
+
+      this.options = Object.assign({
+        baseUrl: '/',
+      }, { ...options })
 
       $(this.$btnRefresh).click(() => {
         this.init()

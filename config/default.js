@@ -8,6 +8,8 @@ module.exports = appInfo => {
   config.port = process.env.PORT || 3000
   config.host = process.env.HOST || '127.0.0.1'
 
+  config.baseUrl = '/'  // nginx 代理在二级目录下时需要
+
   config.static = {
     dir: 'public',  // 以应用根目录的相对路径
   }

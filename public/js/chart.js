@@ -1,4 +1,4 @@
-(exports => {
+(function (exports) {
   function percent2Angle (per, min, max) {
     return per * (max - min) + min
   }
