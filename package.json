@@ -1,6 +1,6 @@
 {
   "name": "pi-dashboard",
-  "version": "0.0.0-rc.1",
+  "version": "0.0.0-rc.2",
   "description": "The node.js rpi dashboard",
   "main": "app.js",
   "bin": "bin/www",
@@ -23,7 +23,6 @@
     "koa-mount": "^4.0.0",
     "koa-route": "^3.2.0",
     "koa-static": "^5.0.0",
-    "material-design-icons": "^3.0.1",
     "popper.js": "^1.14.4",
     "rpio": "^0.9.23",
     "snackbarjs": "^1.1.0",
